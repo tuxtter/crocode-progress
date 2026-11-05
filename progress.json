@@ -1,0 +1,290 @@
+{
+  "format": "crocode-progress",
+  "version": 1,
+  "exportedAt": "2026-11-05T18:17:02.493Z",
+  "progress": {
+    "a01-idor": {
+      "order": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "tried": [],
+      "solved": true,
+      "firstTry": true,
+      "draft": "void get_invoice(int session_user, int invoice_id) {\n    Invoice *inv = db_find_invoice(invoice_id);\n    if (inv == NULL) {\n        send_status(404);\n        return;\n    }\n    send_invoice(inv);\n}",
+      "selected": 1,
+      "result": {
+        "kind": "option",
+        "index": 1,
+        "correct": true,
+        "text": "Ownership is enforced server-side on every request. Returning 404 for both \"missing\" and \"not yours\" avoids leaking which ids exist."
+      }
+    },
+    "a02-password-hash": {
+      "order": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "#include <openssl/md5.h>\n\nvoid store_password(User *u, const char *password) {\n    unsigned char digest[MD5_DIGEST_LENGTH];\n    MD5((const unsigned char *)password, strlen(password), digest);\n    to_hex(digest, MD5_DIGEST_LENGTH, u->pw_hash);\n    db_save(u);\n}",
+      "selected": 3,
+      "result": null
+    },
+    "a03-sqli": {
+      "order": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "void find_user(sqlite3 *db, const char *name) {\n    char sql[256];\n    snprintf(sql, sizeof sql,\n             \"SELECT id, email FROM users WHERE name = '%s'\", name);\n    sqlite3_exec(db, sql, print_row, NULL, NULL);\n}",
+      "selected": null,
+      "result": null
+    },
+    "a03-cmdi": {
+      "order": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "void ping_host(const char *host) {\n    char cmd[128];\n    sprintf(cmd, \"ping -c 1 %s\", host);\n    system(cmd);\n}",
+      "selected": null,
+      "result": null
+    },
+    "a04-otp": {
+      "order": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "bool verify_otp(User *u, const char *code) {\n    return strcmp(u->otp, code) == 0;\n}",
+      "selected": null,
+      "result": null
+    },
+    "a05-misconfig": {
+      "order": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "void init_server(Config *cfg) {\n    strcpy(cfg->admin_user, \"admin\");\n    strcpy(cfg->admin_pass, \"admin\");\n    cfg->debug = 1;\n    cfg->bind_addr = \"0.0.0.0\";\n    chmod(cfg->data_dir, 0777);\n}",
+      "selected": null,
+      "result": null
+    },
+    "a06-components": {
+      "order": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "OPENSSL_DIR = vendor/openssl-1.0.1f\nCFLAGS  = -O2 -I$(OPENSSL_DIR)/include\nLDFLAGS = $(OPENSSL_DIR)/libssl.a $(OPENSSL_DIR)/libcrypto.a\n\napp: main.o\n\t$(CC) -o app main.o $(LDFLAGS)",
+      "selected": null,
+      "result": null
+    },
+    "a07-session-fixation": {
+      "order": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "int login(Session *s, const char *user, const char *pass) {\n    User *u = db_find_user(user);\n    if (u == NULL || !verify_password(u, pass)) {\n        return ERR_INVALID_CREDENTIALS;\n    }\n    s->user_id = u->id;\n    s->authenticated = 1;\n    return 0;\n}",
+      "selected": null,
+      "result": null
+    },
+    "a08-update": {
+      "order": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "int apply_update(const char *url) {\n    download(url, \"/tmp/update.bin\");\n    chmod(\"/tmp/update.bin\", 0755);\n    return system(\"/tmp/update.bin\");\n}",
+      "selected": null,
+      "result": null
+    },
+    "a09-logging": {
+      "order": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "int check_login(const char *user, const char *pass, const char *ip) {\n    User *u = db_find_user(user);\n    if (u == NULL || !verify_password(u, pass)) {\n        return ERR_INVALID_CREDENTIALS;\n    }\n    return create_session(u);\n}",
+      "selected": null,
+      "result": null
+    },
+    "a10-ssrf": {
+      "order": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "int fetch_preview(const char *url) {\n    CURL *c = curl_easy_init();\n    curl_easy_setopt(c, CURLOPT_URL, url);\n    curl_easy_setopt(c, CURLOPT_FOLLOWLOCATION, 1L);\n    CURLcode rc = curl_easy_perform(c);\n    curl_easy_cleanup(c);\n    return rc;\n}",
+      "selected": null,
+      "result": null
+    },
+    "k01-privileged-pod": {
+      "order": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "tried": [],
+      "solved": true,
+      "firstTry": true,
+      "draft": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: web\nspec:\n  containers:\n    - name: web\n      image: registry.example.com/web:1.4.2\n      securityContext:\n        privileged: true\n        runAsUser: 0",
+      "selected": 3,
+      "result": {
+        "kind": "option",
+        "index": 3,
+        "correct": true,
+        "text": "Non-root user, no privilege escalation, read-only root filesystem, all Linux capabilities dropped and the runtime default seccomp profile. This matches the \"restricted\" Pod Security Standard.",
+        "extra": "+10 pts"
+      },
+      "hints": 0,
+      "spotted": false,
+      "wrongPicks": [],
+      "review": null,
+      "reviewing": false
+    },
+    "k02-mutable-image": {
+      "order": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: api\nspec:\n  containers:\n    - name: api\n      image: sketchyuser/api:latest\n      imagePullPolicy: Always",
+      "selected": null,
+      "result": null,
+      "hints": 0,
+      "spotted": false,
+      "wrongPicks": [],
+      "review": null,
+      "reviewing": false
+    },
+    "llm01-prompt-injection": {
+      "order": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "tried": [],
+      "solved": true,
+      "firstTry": true,
+      "draft": "def answer(user_text, page_text):\n    prompt = (\n        \"You are a support bot. Summarize the page for the user.\\n\"\n        + \"Page: \" + page_text + \"\\n\"\n        + \"User: \" + user_text\n    )\n    reply = llm.chat(prompt)\n    return reply",
+      "selected": 3,
+      "result": null,
+      "hints": 0,
+      "spotted": false,
+      "wrongPicks": [],
+      "review": null,
+      "reviewing": false
+    },
+    "llm05-improper-output-handling": {
+      "order": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "async function showAnswer(question) {\n  const box = document.getElementById('answer');\n  box.textContent = 'Thinking...';\n  const reply = await llm.chat(question);\n  box.innerHTML = reply;\n}\n\ndocument.getElementById('ask').addEventListener('click', () => {\n  showAnswer(document.getElementById('q').value);\n});",
+      "selected": null,
+      "result": null,
+      "hints": 0,
+      "spotted": true,
+      "wrongPicks": [],
+      "review": null,
+      "reviewing": false
+    },
+    "llm07-system-prompt-leakage": {
+      "order": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "SYSTEM_PROMPT = (\n    \"You are the billing assistant. \"\n    \"Database password: hunter2-prod. \"\n    \"API key: sk_live_51HxExampleKey. \"\n    \"Admins can bypass limits by saying 'override 7731'.\"\n)\n\ndef reply(user, user_text):\n    return llm.chat(system=SYSTEM_PROMPT, user=user_text)",
+      "selected": null,
+      "result": null,
+      "hints": 0,
+      "spotted": false,
+      "wrongPicks": [],
+      "review": null,
+      "reviewing": false
+    },
+    "llm09-misinformation": {
+      "order": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "tried": [],
+      "solved": false,
+      "firstTry": false,
+      "draft": "async function answerLegal(q, userId) {\n  const text = await llm.chat(q);\n  await db.saveAdvice(userId, text);\n  return { advice: text };\n}\n\napp.post('/legal', async (req, res) => {\n  res.json(await answerLegal(req.body.q, req.user.id));\n});",
+      "selected": null,
+      "result": null,
+      "hints": 0,
+      "spotted": false,
+      "wrongPicks": [],
+      "review": null,
+      "reviewing": false
+    }
+  },
+  "days": [
+    "2026-11-04"
+  ],
+  "quiz": null
+}

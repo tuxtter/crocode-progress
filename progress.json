@@ -1,7 +1,7 @@
 {
   "format": "crocode-progress",
   "version": 1,
-  "exportedAt": "2026-11-05T18:17:02.493Z",
+  "exportedAt": "2026-11-05T18:17:32.836Z",
   "progress": {
     "a01-idor": {
       "order": [
@@ -20,7 +20,9 @@
         "index": 1,
         "correct": true,
         "text": "Ownership is enforced server-side on every request. Returning 404 for both \"missing\" and \"not yours\" avoids leaking which ids exist."
-      }
+      },
+      "spotted": false,
+      "wrongPicks": []
     },
     "a02-password-hash": {
       "order": [
@@ -34,7 +36,9 @@
       "firstTry": false,
       "draft": "#include <openssl/md5.h>\n\nvoid store_password(User *u, const char *password) {\n    unsigned char digest[MD5_DIGEST_LENGTH];\n    MD5((const unsigned char *)password, strlen(password), digest);\n    to_hex(digest, MD5_DIGEST_LENGTH, u->pw_hash);\n    db_save(u);\n}",
       "selected": 3,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a03-sqli": {
       "order": [
@@ -48,7 +52,9 @@
       "firstTry": false,
       "draft": "void find_user(sqlite3 *db, const char *name) {\n    char sql[256];\n    snprintf(sql, sizeof sql,\n             \"SELECT id, email FROM users WHERE name = '%s'\", name);\n    sqlite3_exec(db, sql, print_row, NULL, NULL);\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a03-cmdi": {
       "order": [
@@ -62,7 +68,9 @@
       "firstTry": false,
       "draft": "void ping_host(const char *host) {\n    char cmd[128];\n    sprintf(cmd, \"ping -c 1 %s\", host);\n    system(cmd);\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a04-otp": {
       "order": [
@@ -76,7 +84,9 @@
       "firstTry": false,
       "draft": "bool verify_otp(User *u, const char *code) {\n    return strcmp(u->otp, code) == 0;\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a05-misconfig": {
       "order": [
@@ -90,7 +100,9 @@
       "firstTry": false,
       "draft": "void init_server(Config *cfg) {\n    strcpy(cfg->admin_user, \"admin\");\n    strcpy(cfg->admin_pass, \"admin\");\n    cfg->debug = 1;\n    cfg->bind_addr = \"0.0.0.0\";\n    chmod(cfg->data_dir, 0777);\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a06-components": {
       "order": [
@@ -104,7 +116,9 @@
       "firstTry": false,
       "draft": "OPENSSL_DIR = vendor/openssl-1.0.1f\nCFLAGS  = -O2 -I$(OPENSSL_DIR)/include\nLDFLAGS = $(OPENSSL_DIR)/libssl.a $(OPENSSL_DIR)/libcrypto.a\n\napp: main.o\n\t$(CC) -o app main.o $(LDFLAGS)",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a07-session-fixation": {
       "order": [
@@ -118,7 +132,9 @@
       "firstTry": false,
       "draft": "int login(Session *s, const char *user, const char *pass) {\n    User *u = db_find_user(user);\n    if (u == NULL || !verify_password(u, pass)) {\n        return ERR_INVALID_CREDENTIALS;\n    }\n    s->user_id = u->id;\n    s->authenticated = 1;\n    return 0;\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a08-update": {
       "order": [
@@ -132,7 +148,9 @@
       "firstTry": false,
       "draft": "int apply_update(const char *url) {\n    download(url, \"/tmp/update.bin\");\n    chmod(\"/tmp/update.bin\", 0755);\n    return system(\"/tmp/update.bin\");\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a09-logging": {
       "order": [
@@ -146,7 +164,9 @@
       "firstTry": false,
       "draft": "int check_login(const char *user, const char *pass, const char *ip) {\n    User *u = db_find_user(user);\n    if (u == NULL || !verify_password(u, pass)) {\n        return ERR_INVALID_CREDENTIALS;\n    }\n    return create_session(u);\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "a10-ssrf": {
       "order": [
@@ -160,7 +180,9 @@
       "firstTry": false,
       "draft": "int fetch_preview(const char *url) {\n    CURL *c = curl_easy_init();\n    curl_easy_setopt(c, CURLOPT_URL, url);\n    curl_easy_setopt(c, CURLOPT_FOLLOWLOCATION, 1L);\n    CURLcode rc = curl_easy_perform(c);\n    curl_easy_cleanup(c);\n    return rc;\n}",
       "selected": null,
-      "result": null
+      "result": null,
+      "spotted": false,
+      "wrongPicks": []
     },
     "k01-privileged-pod": {
       "order": [
